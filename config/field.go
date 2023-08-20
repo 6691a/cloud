@@ -19,7 +19,7 @@ type GCP struct {
 	CredentialPath string `yaml:"credential_path"`
 }
 
-type VM struct {
+type Hypervisor struct {
 	Service    string  `yaml:"service"`
 	WorkerSize uint8   `yaml:"worker_size"`
 	bufferSize uint8   `yaml:"buffer_size"`
@@ -27,5 +27,8 @@ type VM struct {
 }
 
 type Proxmox struct {
-	Url string `yaml:"url"`
+	Url   string `yaml:"url"`
+	Node  string `yaml:"node"`
+	User  string `yaml:"user"`
+	Token string `yaml:"token"`
 }

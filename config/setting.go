@@ -6,9 +6,9 @@ import (
 )
 
 type Setting struct {
-	Server Server `yaml:"server"`
-	DNS    DNS    `yaml:"dns"`
-	VM     VM     `yaml:"vm"`
+	Server     Server     `yaml:"server"`
+	DNS        DNS        `yaml:"dns"`
+	Hypervisor Hypervisor `yaml:"hypervisor"`
 }
 
 func NewSetting(path string) *Setting {
