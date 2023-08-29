@@ -1,10 +1,14 @@
 package hypervisor
 
-import "github.com/6691a/iac/config"
+import (
+	"github.com/6691a/iac/config"
+)
 
 type Hypervisor interface {
-	Clone(record *CloneRecord) (string, error)
-	Delete(id int) (string, error)
+	Clone(record *CloneRecord) error
+	Delete(id uint16) error
+	CreateNetwork(recode *NetworkRecode) error
+	SetVmConfig(recode *VmConfigRecode) error
 }
 
 func NewHypervisor(setting config.Setting) (Hypervisor, error) {
@@ -18,31 +22,90 @@ func NewHypervisor(setting config.Setting) (Hypervisor, error) {
 }
 
 type Record struct {
-	id          int
-	name        string
-	description string
+	Id          uint16
+	Name        string
+	Description string
 }
 
-func NewRecord(id int, name string, description string) *Record {
+func NewRecord(id uint16, name string, description string) *Record {
 	return &Record{
-		id:          id,
-		name:        name,
-		description: description,
+		Id:          id,
+		Name:        name,
+		Description: description,
 	}
 }
 
 type CloneRecord struct {
-	Record
-	newId int
+	*Record
+	NewId uint16
 }
 
-func NewCloneRecord(id int, name string, description string, newId int) *CloneRecord {
+func NewCloneRecord(id uint16, name string, description string, newId uint16) *CloneRecord {
 	return &CloneRecord{
-		Record: Record{
-			id:          id,
-			name:        name,
-			description: description,
+		Record: &Record{
+			Id:          id,
+			Name:        name,
+			Description: description,
 		},
-		newId: newId,
+		NewId: newId,
+	}
+}
+
+type NetworkType string
+
+const (
+	Bridge     NetworkType = "bridge"
+	Bond       NetworkType = "bond"
+	VLAN       NetworkType = "vlan"
+	OVSBridge  NetworkType = "OVSBridge"
+	OVSBond    NetworkType = "OVSBond"
+	OVSIntPort NetworkType = "OVSIntPort"
+)
+
+type NetworkRecode struct {
+	*Record
+	Type_     NetworkType
+	AutoStart bool
+	Cidr      string
+	Args      []interface{}
+}
+
+func NewNetworkRecode(name, cidr, description string, type_ NetworkType, autoStart bool, args ...interface{}) *NetworkRecode {
+	return &NetworkRecode{
+		Record: &Record{
+			Id:          0,
+			Name:        name,
+			Description: description,
+		},
+		Type_:     type_,
+		AutoStart: autoStart,
+		Cidr:      cidr,
+		Args:      args,
+	}
+}
+
+type VmConfigRecode struct {
+	*Record
+	core     uint8
+	memory   uint16
+	netDrive map[uint8]string
+	ipCfg    map[uint8]string
+	onBoot   bool
+	Args     []interface{}
+}
+
+func NewVmConfigRecode(id uint16, core uint8, memory uint16, onBoot bool, netDrive map[uint8]string, ipCfg map[uint8]string, args ...interface{}) *VmConfigRecode {
+	return &VmConfigRecode{
+		Record: &Record{
+			Id:          id,
+			Name:        "",
+			Description: "",
+		},
+		core:     core,
+		memory:   memory,
+		netDrive: netDrive,
+		ipCfg:    ipCfg,
+		onBoot:   onBoot,
+		Args:     args,
 	}
 }

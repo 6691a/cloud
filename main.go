@@ -31,9 +31,48 @@ func main() {
 	if err != nil {
 		fmt.Print(err)
 	}
-	cloneRecode := hypervisor.NewCloneRecord(10002, "golang.test.com", "Test proxmox-api-go clone", 1051)
 
-	instance.Clone(cloneRecode)
+	instance.Delete(1050)
 	instance.Delete(1051)
+	cloneRecode := hypervisor.NewCloneRecord(
+		10002,
+		"golang.test.com",
+		"Test proxmox-api-go clone",
+		1050,
+	)
+	// Clone VM
+	fmt.Print(instance.Clone(cloneRecode))
+
+	vcrd := hypervisor.NewVmConfigRecode(
+		1050,
+		1,
+		1024,
+		true,
+		map[uint8]string{0: "virtio,bridge=vmbr2"},
+		map[uint8]string{0: "gw=192.168.10.1,ip=192.168.10.2/24"},
+	)
+	// Set VM config
+	fmt.Print(instance.SetVmConfig(vcrd))
+
+	// ========================
+	cloneRecode = hypervisor.NewCloneRecord(
+		10002,
+		"golang.test.com",
+		"Test proxmox-api-go clone",
+		1051,
+	)
+	// Clone VM
+	fmt.Print(instance.Clone(cloneRecode))
+
+	vcrd = hypervisor.NewVmConfigRecode(
+		1051,
+		1,
+		1024,
+		true,
+		map[uint8]string{0: "virtio,bridge=vmbr2"},
+		map[uint8]string{0: "gw=192.168.10.1,ip=192.168.10.10/24"},
+	)
+	// Set VM config
+	fmt.Print(instance.SetVmConfig(vcrd))
 
 }
