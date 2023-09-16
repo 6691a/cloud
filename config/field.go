@@ -22,7 +22,7 @@ type GCP struct {
 type Hypervisor struct {
 	Service    string  `yaml:"service"`
 	WorkerSize uint8   `yaml:"worker_size"`
-	bufferSize uint8   `yaml:"buffer_size"`
+	BufferSize uint8   `yaml:"buffer_size"`
 	Proxmox    Proxmox `yaml:"proxmox"`
 }
 

@@ -37,7 +37,8 @@ func NewRecord(id uint16, name string, description string) *Record {
 
 type CloneRecord struct {
 	*Record
-	NewId uint16
+	NewId  uint16
+	Method Method
 }
 
 func NewCloneRecord(id uint16, name string, description string, newId uint16) *CloneRecord {
@@ -47,7 +48,8 @@ func NewCloneRecord(id uint16, name string, description string, newId uint16) *C
 			Name:        name,
 			Description: description,
 		},
-		NewId: newId,
+		NewId:  newId,
+		Method: Clone,
 	}
 }
 
