@@ -29,3 +29,16 @@ type VM struct {
 type Proxmox struct {
 	Url string `yaml:"url"`
 }
+
+type Router struct {
+	Service    string   `yaml:"service"`
+	WorkerSize uint8    `yaml:"worker_size"`
+	BufferSize uint8    `yaml:"buffer_size"`
+	RouterOS   RouterOS `yaml:"routeros"`
+}
+
+type RouterOS struct {
+	Url      string `yaml:"url"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+}

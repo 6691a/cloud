@@ -1,8 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/6691a/iac/config"
-	"github.com/6691a/iac/dns"
+	"github.com/6691a/iac/router"
 	"github.com/getsentry/sentry-go"
 )
 
@@ -21,7 +22,12 @@ func initSentry(setting config.Setting) {
 
 func main() {
 	setting := config.NewSetting("setting.yaml")
-	initSentry(*setting)
-	tasks := dns.GetTasks(*setting)
-	dns.CreateWorker(*setting, tasks)
+	//initSentry(*setting)
+	instance, err := router.NewRouter(*setting)
+	rtSetting := setting.Router.RouterOS
+	if err != nil {
+		fmt.Print(err)
+	}
+	fmt.Print(instance.Login(rtSetting.User, rtSetting.Password))
+
 }
