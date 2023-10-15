@@ -1,8 +1,9 @@
 package config
 
 type Server struct {
-	Debug     bool   `yaml:"debug"`
-	SentryDsn string `yaml:"sentry_dsn"`
+	Debug     bool                     `yaml:"debug"`
+	SentryDsn string                   `yaml:"sentry_dsn"`
+	Logging   map[string]LoggingConfig `yaml:"logging"`
 }
 
 type DNS struct {
@@ -31,4 +32,9 @@ type Proxmox struct {
 	Node  string `yaml:"node"`
 	User  string `yaml:"user"`
 	Token string `yaml:"token"`
+}
+
+type LoggingConfig struct {
+	Level string   `yaml:"level"`
+	Path  []string `yaml:"path"`
 }
