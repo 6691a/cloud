@@ -20,14 +20,21 @@ func initSentry(setting config.Setting) {
 	}
 }
 
-func main() {
+func setup() {
 	setting := config.NewSetting("setting.yaml")
-	//initSentry(*setting)
-	instance, err := router.NewRouter(*setting)
-	rtSetting := setting.Router.RouterOS
+	config.NewLogging(*setting)
+	initSentry(*setting)
+}
+
+func main() {
+	setup()
+
+	setting := config.GetSetting()
+	_, err := router.NewRouter(*setting)
+	//rtSetting := setting.Router.RouterOS
 	if err != nil {
 		fmt.Print(err)
 	}
-	fmt.Print(instance.Login(rtSetting.User, rtSetting.Password))
+	//fmt.Print(instance.Login(rtSetting.User, rtSetting.Password))
 
 }

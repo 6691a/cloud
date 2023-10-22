@@ -1,9 +1,14 @@
 package routeros
 
-import "crypto/tls"
+import (
+	"crypto/tls"
+	"github.com/6691a/iac/config"
+	"go.uber.org/zap"
+)
 
 type RouterOS struct {
 	Client *Client
+	logger *zap.Logger
 }
 
 func NewRouterOS(url string, username string, password string) (*RouterOS, error) {
@@ -12,9 +17,17 @@ func NewRouterOS(url string, username string, password string) (*RouterOS, error
 	if err != nil {
 		return nil, err
 	}
-	return &RouterOS{
+	router := &RouterOS{
 		Client: client,
-	}, nil
+		logger: config.GetLogger("default"),
+	}
+	router.logger.Error("RouterOS login failed", zap.Error(err))
+	// TODO: basic auth login check
+	if err := router.Login(username, password); err != nil {
+		router.logger.Panic("RouterOS login failed", zap.Error(err))
+		return nil, err
+	}
+	return router, nil
 }
 
 func (r *RouterOS) Login(username string, password string) error {

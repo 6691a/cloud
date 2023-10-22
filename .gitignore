@@ -31,3 +31,5 @@ go.work
 setting.yaml
 
 *credential.json
+
+/logs

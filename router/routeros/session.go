@@ -81,7 +81,7 @@ func (s *Session) Login(username, password string) error {
 	if res.StatusCode != http.StatusOK {
 		bodyBytes, _ := io.ReadAll(res.Body)
 		bodyString := string(bodyBytes)
-		return fmt.Errorf("Login failed: %s", bodyString)
+		return fmt.Errorf("login failed: %s", bodyString)
 	}
 	return nil
 }
