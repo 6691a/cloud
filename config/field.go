@@ -35,6 +35,8 @@ type Proxmox struct {
 }
 
 type LoggingConfig struct {
-	Level string   `yaml:"level"`
-	Path  []string `yaml:"path"`
+	Level        string `yaml:"level"`
+	Path         string `yaml:"path"`
+	MaxAge       int    `yaml:"max_age"`
+	RotationTime int    `yaml:"rotation_time"`
 }

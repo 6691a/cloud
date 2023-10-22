@@ -1,8 +1,11 @@
 package config
 
 import (
+	"fmt"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"time"
 )
 
 var logger = make(map[string]*zap.Logger)
@@ -19,10 +22,11 @@ func NewLogging(setting Setting) {
 	} else {
 		encodeConfig = zap.NewProductionEncoderConfig()
 		config = zap.NewProductionConfig()
-
 	}
 
 	for name, loggingSetting := range serverSetting.Logging {
+		logRotate := createFileRotate(loggingSetting)
+
 		encodeConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
 		encodeConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 		encodeConfig.TimeKey = "timestamp"
@@ -37,10 +41,30 @@ func NewLogging(setting Setting) {
 
 		config.EncoderConfig = encodeConfig
 		config.Encoding = "json"
-		config.OutputPaths = loggingSetting.Path
+		config.OutputPaths = []string{loggingSetting.Path}
 
-		logger[name] = zap.Must(config.Build())
+		core := zapcore.NewTee(
+			zapcore.NewCore(
+				zapcore.NewJSONEncoder(encodeConfig),
+				zapcore.AddSync(logRotate),
+				zapcore.DebugLevel,
+			),
+		)
+		logger[name] = zap.New(core)
 	}
+}
+
+func createFileRotate(config LoggingConfig) *rotatelogs.RotateLogs {
+	fmt.Println(config.Path)
+	fileRotate, err := rotatelogs.New(
+		config.Path+".%Y%m%d.log",
+		rotatelogs.WithRotationTime(time.Duration(config.RotationTime)*time.Hour),
+		rotatelogs.WithMaxAge(time.Duration(config.MaxAge)*24*time.Hour),
+	)
+	if err != nil {
+		panic(err)
+	}
+	return fileRotate
 }
 
 func GetLogger(name string) *zap.Logger {

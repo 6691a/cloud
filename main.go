@@ -28,4 +28,6 @@ func main() {
 		zap.String("email", "john@example.com"),
 	)
 
+	logger.Error("user registration failed")
+
 }
