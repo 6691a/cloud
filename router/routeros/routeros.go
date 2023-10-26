@@ -21,8 +21,7 @@ func NewRouterOS(url string, username string, password string) (*RouterOS, error
 		Client: client,
 		logger: config.GetLogger("default"),
 	}
-	router.logger.Error("RouterOS login failed", zap.Error(err))
-	// TODO: basic auth login check
+	// TODO: basic auth login check change to different approach (if supported in RouterOS)
 	if err := router.Login(username, password); err != nil {
 		router.logger.Panic("RouterOS login failed", zap.Error(err))
 		return nil, err
@@ -33,3 +32,23 @@ func NewRouterOS(url string, username string, password string) (*RouterOS, error
 func (r *RouterOS) Login(username string, password string) error {
 	return r.Client.Login(username, password)
 }
+
+func (r *RouterOS) AddRoute() {
+
+}
+
+func (r *RouterOS) DeleteRoute() {}
+
+func (r *RouterOS) AddMangle() {}
+
+func (r *RouterOS) DeleteMangle() {}
+
+func (r *RouterOS) AddWhiteList() {}
+
+func (r *RouterOS) DeleteWhiteList() {}
+
+func (r *RouterOS) UpdateWhiteList() {}
+
+func (r *RouterOS) AddFilter() {}
+
+func (r *RouterOS) DeleteFilter() {}
