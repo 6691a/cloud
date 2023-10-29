@@ -22,7 +22,7 @@ type Request struct {
 
 type Response struct {
 	Error   error
-	Records []interface{}
+	Records interface{}
 }
 
 type Task struct {
@@ -55,9 +55,10 @@ func worker(hv Hypervisor, tasks chan Task) {
 			}
 			continue
 		}
-		err := handler(hv, task)
+		records, err := handler(hv, task)
 		task.Response <- Response{
-			Error: err,
+			Error:   err,
+			Records: records,
 		}
 	}
 }

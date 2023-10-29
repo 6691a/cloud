@@ -23,3 +23,15 @@ func NewClient(apiUrl string, hclient *http.Client, tls *tls.Config, proxyString
 func (c *Client) Login(username, password string) error {
 	return c.session.Login(username, password)
 }
+
+func (c *Client) GetWhiteList(name, address string) (*WhiteList, error) {
+	return c.session.GetWhiteList(name, address)
+}
+
+func (c *Client) CreateWhiteList(name, address string) (*WhiteList, error) {
+	return c.session.CreateWhiteList(name, address)
+}
+
+func (c *Client) CreateDomainList(name, domain string) (*DomainList, error) {
+	return c.session.CreateDomainList(name, domain)
+}

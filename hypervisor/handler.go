@@ -1,44 +1,49 @@
 package hypervisor
 
-import "errors"
+import (
+	"errors"
+)
 
-type HypervisorHandlerFunc func(hv Hypervisor, task Task) error
+// HandlerFunc Designed to return an interface{} for the sake of flexibility in modifications
+type HandlerFunc func(hv Hypervisor, task Task) (interface{}, error)
 
-var handlers = map[string]HypervisorHandlerFunc{
+var handlers = map[string]HandlerFunc{
 	"Clone":         handlerClone,
 	"Delete":        handlerDelete,
 	"CreateNetwork": handlerCreateNetwork,
 	"SetVmConfig":   handlerSetVmConfig,
 }
 
-func handlerClone(hv Hypervisor, task Task) error {
+func handlerClone(hv Hypervisor, task Task) (interface{}, error) {
 	record, ok := task.Request.Record.(*CloneRecord)
 	if !ok {
-		return errors.New("invalid request type for Clone")
+		return nil, errors.New("invalid request type for Clone")
 	}
-	return hv.Clone(record)
+	return nil, hv.Clone(record)
 }
 
-func handlerDelete(hv Hypervisor, task Task) error {
-	id, ok := task.Request.Record.(uint16)
+func handlerDelete(hv Hypervisor, task Task) (interface{}, error) {
+	record, ok := task.Request.Record.(*Record)
 	if !ok {
-		return errors.New("invalid request type for Delete")
+		return nil, errors.New("invalid request type for Delete")
 	}
-	return hv.Delete(id)
+	id := record.Id
+
+	return nil, hv.Delete(id)
 }
 
-func handlerCreateNetwork(hv Hypervisor, task Task) error {
+func handlerCreateNetwork(hv Hypervisor, task Task) (interface{}, error) {
 	record, ok := task.Request.Record.(*NetworkRecode)
 	if !ok {
-		return errors.New("invalid request type for CreateNetwork")
+		return nil, errors.New("invalid request type for CreateNetwork")
 	}
-	return hv.CreateNetwork(record)
+	return nil, hv.CreateNetwork(record)
 }
 
-func handlerSetVmConfig(hv Hypervisor, task Task) error {
+func handlerSetVmConfig(hv Hypervisor, task Task) (interface{}, error) {
 	record, ok := task.Request.Record.(*VmConfigRecode)
 	if !ok {
-		return errors.New("invalid request type for SetVmConfig")
+		return nil, errors.New("invalid request type for SetVmConfig")
 	}
 	return hv.SetVmConfig(record)
 }

@@ -106,9 +106,8 @@ func newVmConfigParams(recode *VmConfigRecode) map[string]interface{} {
 	return params
 }
 
-func (p *Proxmox) SetVmConfig(recode *VmConfigRecode) error {
-	_, err := p.Client.SetVmConfig(p.newVmRef(recode.Record), newVmConfigParams(recode))
-	return err
+func (p *Proxmox) SetVmConfig(recode *VmConfigRecode) (interface{}, error) {
+	return p.Client.SetVmConfig(p.newVmRef(recode.Record), newVmConfigParams(recode))
 }
 
 // ======================== Node Network ========================

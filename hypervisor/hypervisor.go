@@ -8,7 +8,7 @@ type Hypervisor interface {
 	Clone(record *CloneRecord) error
 	Delete(id uint16) error
 	CreateNetwork(recode *NetworkRecode) error
-	SetVmConfig(recode *VmConfigRecode) error
+	SetVmConfig(recode *VmConfigRecode) (interface{}, error)
 }
 
 func NewHypervisor(setting config.Setting) (Hypervisor, error) {
