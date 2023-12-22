@@ -5,10 +5,12 @@ import (
 )
 
 type Hypervisor interface {
-	Clone(record *CloneRecord) error
-	Delete(id uint16) error
+	CloneVM(record *CloneRecord) error
+	CloneCT(record *CloneRecord) error
+	Delete(id int) error
 	CreateNetwork(recode *NetworkRecode) error
-	SetVmConfig(recode *VmConfigRecode) (interface{}, error)
+	SetVMConfig(recode *VMConfigRecode) (interface{}, error)
+	SetCTConfig(recode *CTConfigRecode) (interface{}, error)
 }
 
 func NewHypervisor(setting config.Setting) (Hypervisor, error) {
@@ -22,12 +24,12 @@ func NewHypervisor(setting config.Setting) (Hypervisor, error) {
 }
 
 type Record struct {
-	Id          uint16
+	Id          int
 	Name        string
 	Description string
 }
 
-func NewRecord(id uint16, name string, description string) *Record {
+func NewRecord(id int, name string, description string) *Record {
 	return &Record{
 		Id:          id,
 		Name:        name,
@@ -37,20 +39,25 @@ func NewRecord(id uint16, name string, description string) *Record {
 
 type CloneRecord struct {
 	*Record
-	NewId  uint16
+	NewId  int
 	Method Method
+	Full   bool
 }
 
-func NewCloneRecord(id uint16, name string, description string, newId uint16) *CloneRecord {
+func NewCloneRecord(id int, name string, description string, newId int) *CloneRecord {
 	return &CloneRecord{
 		Record: &Record{
 			Id:          id,
 			Name:        name,
 			Description: description,
 		},
-		NewId:  newId,
-		Method: Clone,
+		NewId: newId,
+		Full:  false,
 	}
+}
+
+func (r *CloneRecord) SetFull(full bool) {
+	r.Full = full
 }
 
 type NetworkType string
@@ -86,7 +93,7 @@ func NewNetworkRecode(name, cidr, description string, type_ NetworkType, autoSta
 	}
 }
 
-type VmConfigRecode struct {
+type ConfigRecode struct {
 	*Record
 	core     uint8
 	memory   uint16
@@ -96,8 +103,16 @@ type VmConfigRecode struct {
 	Args     []interface{}
 }
 
-func NewVmConfigRecode(id uint16, core uint8, memory uint16, onBoot bool, netDrive map[uint8]string, ipCfg map[uint8]string, args ...interface{}) *VmConfigRecode {
-	return &VmConfigRecode{
+type VMConfigRecode struct {
+	*ConfigRecode
+}
+
+type CTConfigRecode struct {
+	*ConfigRecode
+}
+
+func newConfigRecode(id int, core uint8, memory uint16, onBoot bool, netDrive map[uint8]string, ipCfg map[uint8]string, args ...interface{}) *ConfigRecode {
+	return &ConfigRecode{
 		Record: &Record{
 			Id:          id,
 			Name:        "",
@@ -109,5 +124,17 @@ func NewVmConfigRecode(id uint16, core uint8, memory uint16, onBoot bool, netDri
 		ipCfg:    ipCfg,
 		onBoot:   onBoot,
 		Args:     args,
+	}
+}
+
+func NewVmConfigRecode(id int, core uint8, memory uint16, onBoot bool, netDrive map[uint8]string, ipCfg map[uint8]string, args ...interface{}) *VMConfigRecode {
+	return &VMConfigRecode{
+		ConfigRecode: newConfigRecode(id, core, memory, onBoot, netDrive, ipCfg, args...),
+	}
+}
+
+func NewCTConfigRecode(id int, core uint8, memory uint16, onBoot bool, netDrive map[uint8]string, ipCfg map[uint8]string, args ...interface{}) *CTConfigRecode {
+	return &CTConfigRecode{
+		ConfigRecode: newConfigRecode(id, core, memory, onBoot, netDrive, ipCfg, args...),
 	}
 }

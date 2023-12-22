@@ -8,18 +8,32 @@ import (
 type HandlerFunc func(hv Hypervisor, task Task) (interface{}, error)
 
 var handlers = map[string]HandlerFunc{
-	"Clone":         handlerClone,
+	"CloneCT":       handlerCloneCT,
+	"CloneVM":       handlerCloneVM,
 	"Delete":        handlerDelete,
 	"CreateNetwork": handlerCreateNetwork,
-	"SetVmConfig":   handlerSetVmConfig,
+	"SetVMConfig":   handlerSetVmConfig,
+	"SetCTConfig":   handlerSetCTConfig,
 }
 
-func handlerClone(hv Hypervisor, task Task) (interface{}, error) {
+func handlerCloneCT(hv Hypervisor, task Task) (interface{}, error) {
 	record, ok := task.Request.Record.(*CloneRecord)
+
 	if !ok {
 		return nil, errors.New("invalid request type for Clone")
 	}
-	return nil, hv.Clone(record)
+
+	return nil, hv.CloneCT(record)
+}
+
+func handlerCloneVM(hv Hypervisor, task Task) (interface{}, error) {
+	record, ok := task.Request.Record.(*CloneRecord)
+
+	if !ok {
+		return nil, errors.New("invalid request type for Clone")
+	}
+
+	return nil, hv.CloneVM(record)
 }
 
 func handlerDelete(hv Hypervisor, task Task) (interface{}, error) {
@@ -41,9 +55,17 @@ func handlerCreateNetwork(hv Hypervisor, task Task) (interface{}, error) {
 }
 
 func handlerSetVmConfig(hv Hypervisor, task Task) (interface{}, error) {
-	record, ok := task.Request.Record.(*VmConfigRecode)
+	record, ok := task.Request.Record.(*VMConfigRecode)
 	if !ok {
 		return nil, errors.New("invalid request type for SetVmConfig")
 	}
-	return hv.SetVmConfig(record)
+	return hv.SetVMConfig(record)
+}
+
+func handlerSetCTConfig(hv Hypervisor, task Task) (interface{}, error) {
+	record, ok := task.Request.Record.(*CTConfigRecode)
+	if !ok {
+		return nil, errors.New("invalid request type for SetCTConfig")
+	}
+	return hv.SetCTConfig(record)
 }

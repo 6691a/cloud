@@ -37,39 +37,39 @@ func main() {
 	dns.CreateWorker(*setting, dnsTasks)
 	hvTasks := hypervisor.GetTasks(*setting)
 	hypervisor.CreateWorker(*setting, hvTasks)
-	router, _ := router.NewRouter(*setting)
+	//router, _ := router.NewRouter(*setting)
 
 	// ==============================
 
 	// ============ CLONE ============
-	//Clone(tasks)
+	CloneCT(hvTasks)
 
 	// ============ CONFIG ============
-	//Config(hvTasks)
+	Config(hvTasks)
 
 	// ============ DELETE ============
-	//Delete(tasks)
+	//Delete(hvTasks)
 
 	// ============ DNS ============
 	//CreateDNS(dnsTasks)
 
 	// ============ ADD WITH LIST ============
 	//CreateWhiteList(router)
-	GetWithList(router)
+	//GetWithList(router)
 	//CreateDomainList(router)
 
 }
 
-func Clone(task chan hypervisor.Task) {
+func CloneCT(task chan hypervisor.Task) {
 	cloneRecode := hypervisor.NewCloneRecord(
-		10002,
+		10000,
 		"sample",
 		"sample clone",
 		1050,
 	)
 	cloneTask := hypervisor.Task{
 		Request: hypervisor.Request{
-			Method: hypervisor.Clone,
+			Method: hypervisor.CloneCT,
 			Record: cloneRecode,
 		},
 		Response: make(chan hypervisor.Response),
@@ -89,27 +89,33 @@ func Delete(task chan hypervisor.Task) {
 		},
 		Response: make(chan hypervisor.Response),
 	}
-
 	task <- deleteTask
-	fmt.Println(<-deleteTask.Response)
+	//응답 대기
+	deleteResponse := <-deleteTask.Response
+	fmt.Print(deleteResponse.Error)
 }
 
 func Config(task chan hypervisor.Task) {
-	vcrd := hypervisor.NewVmConfigRecode(
+	vcrd := hypervisor.NewCTConfigRecode(
 		1050,
-		1,
-		1024,
+		2,
+		2048,
 		false,
+		// VM Config
+		//map[uint8]string{
+		//	0: "virtio,bridge=vmbr0",
+		//},
+		// CT Config
 		map[uint8]string{
-			0: "virtio,bridge=vmbr0",
+			0: "bridge=vmbr0",
 		},
 		map[uint8]string{
-			0: "gw=192.168.88.1,ip=192.168.88.254/24",
+			0: "gw=192.168.88.1,ip=192.168.88.250/24",
 		},
 	)
 	setVmTask := hypervisor.Task{
 		Request: hypervisor.Request{
-			Method: hypervisor.SetVmConfig,
+			Method: hypervisor.SetCTConfig,
 			Record: vcrd,
 		},
 		Response: make(chan hypervisor.Response),

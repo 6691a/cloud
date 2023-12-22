@@ -9,10 +9,12 @@ import (
 type Method string
 
 const (
-	Clone         Method = "Clone"
+	CloneCT       Method = "CloneCT"
+	CloneVM       Method = "CloneVM"
 	Delete        Method = "Delete"
 	CreateNetwork Method = "CreateNetwork"
-	SetVmConfig   Method = "SetVmConfig"
+	SetVmConfig   Method = "SetVMConfig"
+	SetCTConfig   Method = "SetCTConfig"
 )
 
 type Request struct {
